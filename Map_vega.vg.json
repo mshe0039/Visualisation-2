@@ -1,0 +1,145 @@
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "params": [
+        {
+            "name": "Stat_selection",
+            "value":"PTS",
+            "bind":{
+                "input": "select",
+                "options":[
+                    "PTS",
+                    "Goal",
+                    "3P",
+                    "2P",
+                    "FT",
+                    "BKL"
+                ],
+                "labels": [
+                    "Total Points Per Round",
+                    "Total Goals Per Round",
+                    "Total 3 Pointers Per Round",
+                    "Total 2 Pointers Per Round",
+                    "Total free throws Per Round",
+                    "Total Blocks Per Round"
+                ],
+                "name":"Stat Selection: "
+            }
+        }
+    ],
+    "vconcat": [
+        {
+    "width": "container",
+    "height": 450,
+    "title": "Earthquakes of magnitude 4 or large between 4 Oct2020 and 10 Oct 2020",
+    "projection": {"type": "albersUsa"},
+    
+    "layer": [
+    {
+    "data": {
+    "url":
+    "https://raw.githubusercontent.com/mshe0039/Visualisation-2/main/USAj.json",
+    "format": {"type": "topojson", "feature":
+    "ne_110m_admin_1_states_provinces"}
+    },
+    "mark": {"type": "geoshape", "fill": "lightgray", "stroke":"white"}
+    },
+    {
+        "data": {
+            "url":
+            "https://raw.githubusercontent.com/mshe0039/Visualisation-2/main/USAj.json",
+            "format": {"type": "topojson", "feature":
+            "ne_110m_admin_1_states_provinces"}
+            },
+         "transform": [
+            {
+                "lookup": "properties.name",
+                "from": {
+                    "data": {
+                        "url": "https://raw.githubusercontent.com/mshe0039/Visualisation-2/main/filtered_data.csv"        
+                    },
+                    "key":"State",
+                    "fields": ["PTS","Goal","3P","2P","FT","BKL"]
+                }
+            },
+            {
+                "filter":{
+                    "param": "Stat_selection"
+                }
+            },
+            {
+                "calculate": "datum[Stat_selection]",
+                "as": "stat"
+            }
+        ],
+        "mark": {"type": "geoshape", "stroke":"white"},
+
+        "encoding": {
+        "color": {
+            "field":"stat",
+            "type": "quantitative"
+            },
+            "tooltip": [
+                {"field":"stat","type":"quantitative"} 
+            ],
+            "text":{"field":"State"}
+          }
+        },
+        
+        {
+            "data":{
+                "url": "https://raw.githubusercontent.com/mshe0039/Visualisation-2/main/filtered_data.csv"
+            },
+            "transform": [
+                {
+                    "filter":{"param": "Stat_selection"}
+                },
+                {
+                    "filter":{"param": "bar_sel"}
+                }
+            ],
+            "mark": {
+                "type":"text",
+                "font":"Microsoft JhengHei",
+                "fontWeight":700
+            },
+            "encoding": {
+                "latitude":{"field":"lat","type":"quantitative"},
+                "longitude":{"field":"long","type":"quantitative"},
+                "text":{"field":"State"}
+            }
+        }
+    ]
+    },
+    {
+        "width":"container",
+        "height":300,
+        "params": [{
+            "name": "bar_sel",
+            "select":{"type":"point","encodings": ["x"]}
+        }],
+        "data":{
+            "url": "https://raw.githubusercontent.com/mshe0039/Visualisation-2/main/filtered_data.csv"
+        },
+        "mark":"bar",
+        "transform": [
+            {
+                "calculate": "datum[Stat_selection]",
+                "as": "stat2"
+            }
+        ],
+        "encoding": {
+            "x": {"field":"State","type":"nominal"},
+            "y": {"field":"stat2","type":"quantitative"},
+            
+            "color":{
+                "condition":{"param": "bar_sel","value":"steelblue"},
+                "value":"grey"
+            }
+        }
+
+    }
+]
+    
+
+}
+    

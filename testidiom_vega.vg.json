@@ -1,0 +1,120 @@
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "A parallel coordinates plot",
+    "data": {"url": "https://raw.githubusercontent.com/mshe0039/Visualisation-2/main/2002-03%20NBA%20-%20Sheet1.csv"},
+    "width": 500,
+    "height": 500,
+    "params": [{
+      "name": "year_sel",
+      "value": 2002,
+      "bind":{"input": "range","min":2002,"max":2021,"step": 1,"name": "year"}
+    }],
+    "transform": [{
+      "filter":"(datum.year == year_sel)"
+    }
+    ],
+    "layer": [
+      {
+        "mark": "rule",
+        "encoding": {
+          "x": {"value": 0},
+          "opacity": {"value": 0},
+          "y": {
+            "field": "PTS",
+            "type": "quantitative",
+            "axis": {"grid": false, "title": null}
+          },
+          "detail": {"field": "Player"}
+        }
+      },
+      {
+        "mark": "rule",
+        "encoding": {
+          "x": {"value": 0},
+          "opacity": {"value": 0},
+          "y": {
+            "field": "BLK",
+            "type": "quantitative",
+            "axis": {
+              "grid": false,
+              "title": null,
+              "orient": "right",
+              "offset": {"expr": "-2*(width) / 3"}
+            }
+          },
+          "detail": {"field": "Player"}
+        }
+      },
+      {
+        "mark": "rule",
+        "encoding": {
+          "x": {"value": 0},
+          "opacity": {"value": 0},
+          "y": {
+            "field": "G",
+            "type": "quantitative",
+            "axis": {
+              "grid": false,
+              "title": null,
+              "orient": "right",
+              "offset": {"expr": "-(width) / 3"}
+            }
+          },
+          "detail": {"field": "Player"}
+        }
+      },
+      {
+        "mark": "rule",
+        "encoding": {
+          "x": {"value": 0},
+          "opacity": {"value": 0},
+          "y": {
+            "field": "FT",
+            "type": "quantitative",
+            "axis": {"grid": false, "title": null, "orient": "right", "offset": 0}
+          }
+        }
+      },
+      {
+        "transform": [
+          {
+            "calculate": "['PTS','BLK','G','FT']",
+            "as": "x"
+          },
+          {
+            "calculate": "[height - scale('layer_0_y', datum.PTS), height - scale('layer_1_y', datum.BLK), height - scale('layer_2_y', datum.G), height - scale('layer_3_y', datum.FT)]",
+            "as": "y"
+          },
+          {"flatten": ["x", "y"]}
+        ],
+        "selection": {
+          "hover": {
+            "type": "single",
+            "on": "mouseover",
+            "clear": "mouseout",
+            "empty": "none"
+          }
+        },
+        "mark": {"type": "line", "point": true, "tooltip": {"content": "data"}},
+    
+        "encoding": {
+          "opacity": {
+            "condition": {"selection": "hover", "value": 1},
+            "value": 0.2
+          },
+          "color":{"field":"Player"},
+          "x": {
+            "field": "x",
+            "sort": null,
+            "type": "ordinal",
+            "scale": {"type": "point", "padding": 0},
+            "axis": {"title": null, "labelAngle": 0, "domain": false}
+          },
+          "y": {"field": "y", "type": "quantitative", "axis": null},
+          "detail": {"field": "Player"}
+        }
+      }
+    ],
+    "resolve": {"scale": {"y": "independent"}},
+    "config": {"padding": 0, "view": {"stroke": null}}
+  }
